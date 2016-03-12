@@ -46,7 +46,11 @@ namespace Project1 {
 public class NPAgent : Agent {
     public enum UpdateState { PATH_FOLLOWING, TREASURE_GOAL};
     public UpdateState currentState = UpdateState.PATH_FOLLOWING;
-    private KeyboardState oldKeyboardState; 
+    private List<Treasure> treasure;
+    private List<Treasure> marked;
+    public int treasureCount;
+    private KeyboardState oldKeyboardState;
+    public bool allTagged = false;
    private NavNode nextGoal;
    private Path path;
    private int snapDistance = 20;  // this should be a function of step and stepSize
@@ -71,7 +75,7 @@ public class NPAgent : Agent {
    /// <param name="radians"> initial rotation</param>
    /// <param name="meshFile"> Direct X *.x Model in Contents directory </param>
    public NPAgent(Stage theStage, string label, Vector3 pos, Vector3 orientAxis, 
-      float radians, string meshFile)
+      float radians, string meshFile, List<Treasure> t, List<Treasure> m)
       : base(theStage, label, pos, orientAxis, radians, meshFile)
       {  // change names for on-screen display of current camera
       first.Name =  "npFirst";
@@ -84,6 +88,9 @@ public class NPAgent : Agent {
       agentObject.turnToFace(nextGoal.Translation);  // orient towards the first path goal
 		// set snapDistance to be a little larger than step * stepSize
 		snapDistance = (int) (1.5 * (agentObject.Step * agentObject.StepSize));
+        treasure = t;
+        marked = m;
+        treasureCount = 0;
       }   
 
    /// <summary>
@@ -92,9 +99,12 @@ public class NPAgent : Agent {
    /// continue making steps towards the nextGoal.
    /// </summary>
    public override void Update(GameTime gameTime) {
+       int target = findTreasure(agentObject, treasure);
        KeyboardState keyboardState = Keyboard.GetState();
+       Terrain terrain = stage.Terrain;
        if ((keyboardState.IsKeyDown(Keys.N) && !oldKeyboardState.IsKeyDown(Keys.N)) && currentState == UpdateState.PATH_FOLLOWING)
-          currentState = UpdateState.TREASURE_GOAL;  // toggle NPAgent update state.
+           if(!allTagged)
+                currentState = UpdateState.TREASURE_GOAL;  // toggle NPAgent update state.
        float distance;
        switch(currentState)
        { 
@@ -118,18 +128,22 @@ public class NPAgent : Agent {
                break;
 
            case UpdateState.TREASURE_GOAL :
-               agentObject.turnToFace(new Vector3(67050,100,67950));  // adjust to face nextGoal every move
+               agentObject.turnToFace(treasure[target].translation);  // adjust to face nextGoal every move
 		        // See if at or close to nextGoal, distance measured in 2D xz plane
-		        distance = Vector3.Distance(
-			        new Vector3(67050,0,67950),
+		        distance = Vector3.Distance( 
+			        treasure[target].translation,
 			        new Vector3(agentObject.Translation.X, 0, agentObject.Translation.Z));
                 stage.setInfo(15, stage.agentLocation(this));
-              //stage.setInfo(16,
-              //      string.Format("          nextGoal ({0:f0}, {1:f0}, {2:f0})  distance to next goal = {3,5:f2})", 
-              //          nextGoal.Translation.X/stage.Spacing, nextGoal.Translation.Y, nextGoal.Translation.Z/stage.Spacing, distance) );
+                stage.setInfo(16,
+                      string.Format("          nextGoal ({0:f0}, {1:f0}, {2:f0})  distance to treasure = {3,5:f2})",
+                          treasure[target].translation.X / stage.Spacing, treasure[target].translation.Y, treasure[target].translation.Z / stage.Spacing, distance));
               if (distance  <= 300)  {  
                  // snap to nextGoal and orient toward the new nextGoal 
                  //nextGoal = path.NextNode;
+                  treasure[target].tagged = true;
+                  treasure[target].Visible = false;
+                  marked[target].Visible = true;
+                  treasureCount++;
                  currentState = UpdateState.PATH_FOLLOWING;
                  // agentObject.turnToFace(nextGoal.Translation);
                  }
@@ -139,5 +153,28 @@ public class NPAgent : Agent {
        }
 
       }
+
+    private int findTreasure(Object3D agentObject, List<Treasure> treasure)
+   {
+       float minDistance = 100000000;
+        int targetTreasure = 0;
+        for (int i = 0; i < treasure.Count; i++)
+        {
+            if (!treasure[i].tagged) //don't check distance for tagged treasures
+            {
+                float distance = Vector3.Distance(
+                         treasure[i].translation,
+                         new Vector3(agentObject.Translation.X, 0, agentObject.Translation.Z));
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    targetTreasure = i;
+                }
+            }
+        }
+        if (minDistance == 100000000)
+            allTagged = true;
+        return targetTreasure;
+   }
    } 
 }
