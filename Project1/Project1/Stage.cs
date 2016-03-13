@@ -113,7 +113,7 @@ public class Stage : Game {
 	// Stage variables
 	private TimeSpan time;  // if you need to know the time see Property Time
     //Bool variable to control lerping
-    private bool lerping = true;
+    private bool lerping = false;
     
       
      
@@ -343,6 +343,7 @@ public class Stage : Game {
            terrainHeight = terrain.surfaceHeight(
            (int)(anObject3D.Translation.X / spacing),
            (int)(anObject3D.Translation.Z / spacing));
+           anObject3D.Translation = new Vector3(aPos.X, terrainHeight, aPos.Z);
 
        }
        else
@@ -410,7 +411,7 @@ public class Stage : Game {
       inspector.setInfo(1, "Press keyboard for input (not case sensitive 'H' || 'h')");
       inspector.setInfo(2, "Inspector toggles:  'H' help or info   'M'  matrix or info   'I'  displays next info pane.");
       inspector.setInfo(3, "Arrow keys move the player in, out, left, or right.  'R' resets player to initial orientation.");
-      inspector.setInfo(4, "Stage toggles:  'B' bounding spheres, 'C' || 'X' cameras, 'F' fog, 'T' updates, 'Y' Toogle Lerping 'L' ");
+      inspector.setInfo(4, "Stage toggles:  'B' bounding spheres, 'C' || 'X' cameras, 'F' fog, 'T' updates, 'Y' Toggle Lerping 'L' ");
       // initialize empty info strings
       for (int i = 5; i < 20; i++) inspector.setInfo(i, "  ");
       // set blending for bounding sphere drawing
