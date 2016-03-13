@@ -17,7 +17,8 @@
  *       the class and semester are specified
  *
  * 
- * Group member:  Mike Barnes
+ * Group member:  Therese Horey         therese.horey.57@my.csun.edu
+ * Group member:  Jesus Moran-Perez     jesus.moranperez.983@my.csun.edu
  * Project 1
  * Comp 565 Spring 2016
  */

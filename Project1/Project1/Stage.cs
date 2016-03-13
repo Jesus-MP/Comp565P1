@@ -1,4 +1,10 @@
-﻿/*  
+﻿/*
+ * Group member:  Therese Horey         therese.horey.57@my.csun.edu
+ * Group member:  Jesus Moran-Perez     jesus.moranperez.983@my.csun.edu
+ * Project 1
+ * Comp 565 Spring 2016
+ */
+/*  
     Copyright (C) 2016 G. Michael Barnes
  
     The file Stage.cs is part of AGMGSKv7 a port and update of AGXNASKv6 from
