@@ -112,6 +112,13 @@ public class Stage : Game {
 	private StreamWriter fout = null;
 	// Stage variables
 	private TimeSpan time;  // if you need to know the time see Property Time
+    //Bool variable to control lerping
+    private bool lerping = true;
+    
+      
+     
+    
+
 
 
    public Stage() : base() {
@@ -281,13 +288,73 @@ public class Stage : Game {
 	/// Sets the Object3D's height value to the corresponding surface position's height
 	/// </summary>
 	/// <param name="anObject3D"> has  Translation.X and Translation.Y values</param>
-   public void setSurfaceHeight(Object3D anObject3D) {
-      float terrainHeight = terrain.surfaceHeight( 
-			(int) (anObject3D.Translation.X / spacing), 
-			(int) (anObject3D.Translation.Z / spacing) );
-      anObject3D.Translation = new Vector3( anObject3D.Translation.X, terrainHeight, 
-			anObject3D.Translation.Z);
-      }
+   public void setSurfaceHeight(Object3D anObject3D)
+   {
+
+       //Vecs 3s needed for each corner
+       Vector3 cornerA, cornerB, cornerC, cornerD;
+
+       Vector3 aPos = anObject3D.Translation;
+       //height values for the corners
+       float heightA, heightB, heightC, heightD;
+       heightB = terrain.surfaceHeight((int)(aPos.X / spacing) + 1, (int)(aPos.Z / spacing));
+       heightC = terrain.surfaceHeight((int)(aPos.X / spacing), (int)(aPos.Z / spacing) + 1);
+       heightD = terrain.surfaceHeight((int)(aPos.X / spacing) + 1, (int)(aPos.Z / spacing) + 1);
+       heightA = terrain.surfaceHeight((int)(aPos.X / spacing), (int)(aPos.Z / spacing));
+
+       //Make Vector3 Objects andd add heights as y value
+       cornerA = new Vector3((int)(aPos.X / spacing), heightA, (int)(aPos.Z / spacing));
+       cornerB = new Vector3((int)(aPos.X / spacing) * spacing + spacing, heightB, (int)(aPos.Z / spacing) * spacing);
+       cornerC = new Vector3((int)(aPos.X / spacing) * spacing, heightC, (int)(aPos.Z / spacing) * spacing + spacing);
+       cornerD = new Vector3((int)(aPos.X / spacing) * spacing + spacing, heightD, (int)(aPos.Z / spacing) * spacing + spacing);
+
+       //difference on X and on Z
+       float xy;
+       float zy;
+       float terrainHeight;
+
+       //Differentiate between bottom and top surface
+       //If player is closer to top left corner use lerp
+       //else use lerp on bottom
+       //top surface
+       if (Vector3.Distance(cornerA, aPos) < Vector3.Distance(cornerD, aPos))
+       {
+           xy = Vector3.Lerp(cornerA, cornerB, ((float)(aPos.X - cornerA.X)) / spacing).Y - cornerA.Y;
+           zy = Vector3.Lerp(cornerA, cornerC, ((float)(aPos.Z - cornerA.Z)) / spacing).Y - cornerA.Y;
+           aPos.Y = cornerA.Y + xy + zy;
+
+       }
+       //bottom surface
+       else
+       {
+
+           xy = Vector3.Lerp(cornerD, cornerC, ((float)(cornerD.X - aPos.X)) / spacing).Y - cornerD.Y;
+           zy = Vector3.Lerp(cornerD, cornerB, ((float)(cornerD.Z - aPos.Z)) / spacing).Y - cornerD.Y;
+           aPos.Y = cornerD.Y + xy + zy;
+
+       }
+
+
+
+
+
+       if (lerping == false)
+       {
+           terrainHeight = terrain.surfaceHeight(
+           (int)(anObject3D.Translation.X / spacing),
+           (int)(anObject3D.Translation.Z / spacing));
+
+       }
+       else
+       {
+           anObject3D.Translation = new Vector3(aPos.X, aPos.Y, aPos.Z);
+       }
+
+
+
+
+
+   }
 
    public void setBlendingState(bool state) {
       if (state) display.BlendState = blending;
@@ -343,7 +410,7 @@ public class Stage : Game {
       inspector.setInfo(1, "Press keyboard for input (not case sensitive 'H' || 'h')");
       inspector.setInfo(2, "Inspector toggles:  'H' help or info   'M'  matrix or info   'I'  displays next info pane.");
       inspector.setInfo(3, "Arrow keys move the player in, out, left, or right.  'R' resets player to initial orientation.");
-      inspector.setInfo(4, "Stage toggles:  'B' bounding spheres, 'C' || 'X' cameras, 'F' fog, 'T' updates, 'Y' yon");
+      inspector.setInfo(4, "Stage toggles:  'B' bounding spheres, 'C' || 'X' cameras, 'F' fog, 'T' updates, 'Y' Toogle Lerping 'L' ");
       // initialize empty info strings
       for (int i = 5; i < 20; i++) inspector.setInfo(i, "  ");
       // set blending for bounding sphere drawing
@@ -465,31 +532,39 @@ public class Stage : Game {
       // Process user keyboard events that relate to the render state of the the stage
       KeyboardState keyboardState = Keyboard.GetState();
       if (keyboardState.IsKeyDown(Keys.Escape)) Exit();
-      else if (keyboardState.IsKeyDown(Keys.B) && !oldKeyboardState.IsKeyDown(Keys.B)) 
-         DrawBoundingSpheres = ! DrawBoundingSpheres;
-      else if (keyboardState.IsKeyDown(Keys.C) && !oldKeyboardState.IsKeyDown(Keys.C)) 
-         setCamera(1);
-		else if (keyboardState.IsKeyDown(Keys.X) && !oldKeyboardState.IsKeyDown(Keys.X))
-			setCamera(-1);
+      else if (keyboardState.IsKeyDown(Keys.B) && !oldKeyboardState.IsKeyDown(Keys.B))
+          DrawBoundingSpheres = !DrawBoundingSpheres;
+      else if (keyboardState.IsKeyDown(Keys.C) && !oldKeyboardState.IsKeyDown(Keys.C))
+          setCamera(1);
+      else if (keyboardState.IsKeyDown(Keys.X) && !oldKeyboardState.IsKeyDown(Keys.X))
+          setCamera(-1);
       else if (keyboardState.IsKeyDown(Keys.F) && !oldKeyboardState.IsKeyDown(Keys.F))
-         Fog = ! Fog;
+          Fog = !Fog;
       // key event handlers needed for Inspector
       // set help display on
-      else if (keyboardState.IsKeyDown(Keys.H) && !oldKeyboardState.IsKeyDown(Keys.H)) {
-         inspector.ShowHelp = ! inspector.ShowHelp; 
-         inspector.ShowMatrices = false; }
+      else if (keyboardState.IsKeyDown(Keys.H) && !oldKeyboardState.IsKeyDown(Keys.H))
+      {
+          inspector.ShowHelp = !inspector.ShowHelp;
+          inspector.ShowMatrices = false;
+      }
       // set info display on
-      else if (keyboardState.IsKeyDown(Keys.I) && !oldKeyboardState.IsKeyDown(Keys.I)) 
-         inspector.showInfo();
+      else if (keyboardState.IsKeyDown(Keys.I) && !oldKeyboardState.IsKeyDown(Keys.I))
+          inspector.showInfo();
+
+    //set the lerping
+      else if (keyboardState.IsKeyDown(Keys.L) && !oldKeyboardState.IsKeyDown(Keys.L))
+          lerping = !lerping;
       // set miscellaneous display on
-      else if (keyboardState.IsKeyDown(Keys.M) && !oldKeyboardState.IsKeyDown(Keys.M)) {
-         inspector.ShowMatrices = ! inspector.ShowMatrices;
-         inspector.ShowHelp = false; }
+      else if (keyboardState.IsKeyDown(Keys.M) && !oldKeyboardState.IsKeyDown(Keys.M))
+      {
+          inspector.ShowMatrices = !inspector.ShowMatrices;
+          inspector.ShowHelp = false;
+      }
       // toggle update speed between FixedStep and ! FixedStep
       else if (keyboardState.IsKeyDown(Keys.T) && !oldKeyboardState.IsKeyDown(Keys.T))
-         FixedStepRendering = ! FixedStepRendering;
+          FixedStepRendering = !FixedStepRendering;
       else if (keyboardState.IsKeyDown(Keys.Y) && !oldKeyboardState.IsKeyDown(Keys.Y))
-         YonFlag = ! YonFlag;  // toggle Yon clipping value.
+          YonFlag = !YonFlag;  // toggle Yon clipping value.
       oldKeyboardState = keyboardState;    // Update saved state.
       base.Update(gameTime);  // update all GameComponents and DrawableGameComponents
       currentCamera.updateViewMatrix();
