@@ -120,6 +120,8 @@ public class Stage : Game {
 	private TimeSpan time;  // if you need to know the time see Property Time
     //Bool variable to control lerping
     private bool lerping = false;
+    public List<float> packing =  new List<float>{ 0.0f, 0.33f, 0.66f, 0.99f };
+    public int packLevel = 0;
     
       
      
@@ -477,7 +479,7 @@ public class Stage : Game {
 		Components.Add(wall);
 		// create a pack for "flocking" algorithms
 		// create a Pack of 6 dogs centered at (450, 500) that is leaderless
-		Pack pack = new Pack(this, "dog", "dogV6", 6, 450, 430, null);
+		Pack pack = new Pack(this, "dog", "dogV6", 9, 450, 430, player.AgentObject);
 		Components.Add(pack);
       // ----------- OPTIONAL CONTENT HERE -----------------------
       // Load content for your project here
@@ -533,6 +535,7 @@ public class Stage : Game {
 			inspector.setInfo(11, agentLocation(player) + String.Format(" Treasure: {0}", player.treasureCount));
             inspector.setInfo(12, agentLocation(npAgent) + String.Format(" Treasure: {0}", npAgent.treasureCount));
             // inspector lines 13 and 14 can be used to describe player and npAgent's status
+            inspector.setInfo(13, String.Format("Packing level: {0}", packing[packLevel]));
             inspector.setMatrices("player", "npAgent", player.AgentObject.Orientation, npAgent.AgentObject.Orientation);
 
          }
@@ -561,6 +564,13 @@ public class Stage : Game {
     //set the lerping
       else if (keyboardState.IsKeyDown(Keys.L) && !oldKeyboardState.IsKeyDown(Keys.L))
           lerping = !lerping;
+      else if (keyboardState.IsKeyDown(Keys.P) && !oldKeyboardState.IsKeyDown(Keys.P))
+      {
+          if (packLevel == 3)
+              packLevel = 0;
+          else
+              packLevel++;
+      }
       // set miscellaneous display on
       else if (keyboardState.IsKeyDown(Keys.M) && !oldKeyboardState.IsKeyDown(Keys.M))
       {
