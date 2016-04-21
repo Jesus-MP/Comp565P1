@@ -446,15 +446,18 @@ public class Stage : Game {
       Components.Add(terrain);
       // Load Agent mesh objects, meshes do not have textures
       treasure.Add(new Treasure(this, "treasure", "crate", new Vector3(67050, 150, 67950), new Vector3(0, 1, 0), 0.0f));
-      treasure.Add(new Treasure(this, "treasure", "crate", new Vector3(67950, 150, 60950), new Vector3(0, 1, 0), 0.0f));
-      treasure.Add(new Treasure(this, "treasure", "crate", new Vector3(67950, 150, 70950), new Vector3(0, 1, 0), 0.0f));
-      treasure.Add(new Treasure(this, "treasure", "crate", new Vector3(60050, 150, 72950), new Vector3(0, 1, 0), 0.0f));
+
+      treasure.Add(new Treasure(this, "treasure", "crate", new Vector3(435*spacing, 150,424*spacing), new Vector3(0, 1, 0), 0.0f));
+      treasure.Add(new Treasure(this, "treasure", "crate", new Vector3(465*spacing, 150, 453*spacing), new Vector3(0, 1, 0), 0.0f));
+      treasure.Add(new Treasure(this, "treasure", "crate", new Vector3(485*spacing,150,420*spacing), new Vector3(0, 1, 0), 0.0f));
+      treasure.Add(new Treasure(this, "treasure", "crate", new Vector3(425*spacing, 150,444*spacing), new Vector3(0, 1, 0), 0.0f));
       for (int i = 0; i < treasure.Count; i++)
           Components.Add(treasure[i]);
       marked.Add(new Treasure(this, "treasure", "crateOpen", new Vector3(67050, 150, 67950), new Vector3(0, 1, 0), 0.0f));
-      marked.Add(new Treasure(this, "treasure", "crateOpen", new Vector3(67950, 150, 60950), new Vector3(0, 1, 0), 0.0f));
-      marked.Add(new Treasure(this, "treasure", "crateOpen", new Vector3(67950, 150, 70950), new Vector3(0, 1, 0), 0.0f));
-      marked.Add(new Treasure(this, "treasure", "crateOpen", new Vector3(60050, 150, 72950), new Vector3(0, 1, 0), 0.0f));
+      marked.Add(new Treasure(this, "treasure", "crateOpen", new Vector3(435 * spacing, 150, 424 * spacing), new Vector3(0, 1, 0), 0.0f));
+      marked.Add(new Treasure(this, "treasure", "crateOpen", new Vector3(465 * spacing, 150, 453 * spacing), new Vector3(0, 1, 0), 0.0f));
+      marked.Add(new Treasure(this, "treasure", "crateOpen", new Vector3(485 * spacing, 150, 420 * spacing), new Vector3(0, 1, 0), 0.0f));
+      marked.Add(new Treasure(this, "treasure", "crateOpen", new Vector3(425 * spacing, 150, 444 * spacing), new Vector3(0, 1, 0), 0.0f));
       for (int i = 0; i < marked.Count; i++)
       {
           Components.Add(marked[i]);

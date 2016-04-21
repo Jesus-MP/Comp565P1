@@ -49,9 +49,16 @@ public class NavNode : IComparable<NavNode> {
    private double distance;  // can be used with A* path finding.
    private Vector3 translation;
    private NavNodeEnum navigatable;
+   private NavNode pathPredecessor;
    private Vector3 nodeColor;
+   public List<NavNode> adjacent;
+   public int Cost;
 
 // constructors
+
+   public NavNode()
+   {
+   }
 
    /// <summary>
    /// Make a VERTEX NavNode
@@ -62,6 +69,7 @@ public class NavNode : IComparable<NavNode> {
       Navigatable = NavNodeEnum.WAYPOINT;
       }
 
+
    /// <summary>
    /// Make a WAYPOINT and set its Navigational type
    /// </summary>
@@ -70,6 +78,8 @@ public class NavNode : IComparable<NavNode> {
    public NavNode(Vector3 pos, NavNodeEnum nType) {
       translation = pos;
       Navigatable = nType;
+      
+      adjacent = new List<NavNode>();
       }
 
 // properties
@@ -114,6 +124,16 @@ public class NavNode : IComparable<NavNode> {
       else if (distance > n.Distance)  return  1;
       else                             return  0;
       }
+
+   // public int Cost(NavNode n1,NavNode n2)
+   //{
+   //    int cost;
+   //    cost = (int)Vector3.Distance(n1.Translation, n2.Translation);
+
+   //    return cost;
+
+
+   //}
       
    }
 }

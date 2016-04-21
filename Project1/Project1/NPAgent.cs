@@ -59,6 +59,7 @@ public class NPAgent : Agent {
     public bool allTagged = false;
    private NavNode nextGoal;
    private Path path;
+   private NavGraph graph;
    private int snapDistance = 20;  // this should be a function of step and stepSize
 	// If using makePath(int[,]) set WayPoint (x, z) vertex positions in the following array
 	private int[,] pathNode = { {505, 490}, {500, 500}, {490, 505},  // bottom, right
@@ -69,7 +70,7 @@ public class NPAgent : Agent {
                                {110,  90}, {100,  95}, { 95, 105},  // top, left
 										 { 95, 480}, {100, 490}, {110, 495},  // bottom, left
 										 {495, 480} };								  // loop return
-
+    
    /// <summary>
    /// Create a NPC. 
    /// AGXNASK distribution has npAgent move following a Path.
@@ -97,6 +98,8 @@ public class NPAgent : Agent {
         treasure = t;
         marked = m;
         treasureCount = 0;
+        graph = new NavGraph(stage);
+        graph.buildGraph();
       }   
 
    /// <summary>
@@ -108,7 +111,7 @@ public class NPAgent : Agent {
        int target = findTreasure(agentObject, treasure);
        KeyboardState keyboardState = Keyboard.GetState();
        Terrain terrain = stage.Terrain;
-       if ((keyboardState.IsKeyDown(Keys.N) && !oldKeyboardState.IsKeyDown(Keys.N)) && currentState == UpdateState.PATH_FOLLOWING)
+       if (Vector3.Distance(agentObject.Translation, treasure[target].translation) < 4000 && currentState == UpdateState.PATH_FOLLOWING)
            if(!allTagged)
                 currentState = UpdateState.TREASURE_GOAL;  // toggle NPAgent update state.
        float distance;

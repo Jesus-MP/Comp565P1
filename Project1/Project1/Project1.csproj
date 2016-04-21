@@ -79,6 +79,7 @@
     <Compile Include="Inspector.cs" />
     <Compile Include="Model3D.cs" />
     <Compile Include="MovableModel3D.cs" />
+    <Compile Include="NavGraph.cs" />
     <Compile Include="NavNode.cs" />
     <Compile Include="NPAgent.cs" />
     <Compile Include="Object3D.cs" />
